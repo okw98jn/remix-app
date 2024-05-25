@@ -1,5 +1,4 @@
 import { Outlet } from "@remix-run/react";
-
 import SocialAuthButton from "@/routes/_auth/components/SocialAuthButton";
 import googleImage from "@/routes/_auth/images/google.png";
 import githubImage from "@/routes/_auth/images/github.png";
@@ -15,7 +14,7 @@ const Auth = () => {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-3 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-              もしくは
+              Or sign in with
             </span>
           </div>
         </div>
