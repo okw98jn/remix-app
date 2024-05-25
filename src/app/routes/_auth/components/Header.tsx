@@ -1,8 +1,8 @@
 import { Link } from "@remix-run/react";
 
 type Props = {
-  title: "Sign in to your account" | "Create a new account";
-  linkText: "create a new account" | "sign in to your account";
+  title: "ログイン" | "アカウント作成";
+  linkText: "アカウント作成" | "ログイン";
   linkPath: "/login" | "/register";
 };
 
@@ -13,12 +13,11 @@ const Header: React.FC<Props> = ({ title, linkText, linkPath }) => {
         {title}
       </h2>
       <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-        Or{" "}
         <Link
           to={linkPath}
           className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
         >
-          {linkText}
+          {linkText}はこちら
         </Link>
       </p>
     </div>
