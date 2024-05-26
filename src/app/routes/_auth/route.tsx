@@ -23,7 +23,7 @@ const Auth = () => {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-3 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-              Or sign in with
+              もしくは
             </span>
           </div>
         </div>
