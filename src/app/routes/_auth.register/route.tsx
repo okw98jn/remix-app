@@ -5,11 +5,10 @@ import { ValidatedForm, validationError } from "remix-validated-form";
 import { Button } from "@/components/ui/button";
 import Header from "@/routes/_auth/components/Header";
 import FormItem from "@/routes/_auth/components/FormItem";
-// TODO:アカウント登録用のバリデータを作る
-import loginValidator from "@/routes/_auth.login/validator/loginValidator";
+import registerValidator from "@/routes/_auth.register/validator/registerValidator";
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await loginValidator.validate(await request.formData());
+  const formData = await registerValidator.validate(await request.formData());
 
   if (formData.error) {
     return validationError(formData.error);
@@ -25,7 +24,7 @@ const Register = () => {
       <ValidatedForm
         className="space-y-6"
         method="post"
-        validator={loginValidator}
+        validator={registerValidator}
       >
         <FormItem
           type="email"
