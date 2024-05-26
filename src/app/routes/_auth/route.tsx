@@ -1,7 +1,16 @@
 import { Outlet } from "@remix-run/react";
+import githubImage from "@/routes/_auth/images/github.png";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+
 import SocialAuthButton from "@/routes/_auth/components/SocialAuthButton";
 import googleImage from "@/routes/_auth/images/google.png";
-import githubImage from "@/routes/_auth/images/github.png";
+import { authenticator } from "@/services/auth.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  return await authenticator.isAuthenticated(request, {
+    successRedirect: "/",
+  });
+}
 
 const Auth = () => {
   return (
