@@ -1,12 +1,8 @@
-import type {
-  ActionFunction,
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
-import { Form, json, useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { Form } from "@remix-run/react";
 
 import { authenticator } from "@/services/auth.server";
+import axiosInstance from "@/axiosSetting";
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,26 +11,24 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const action: ActionFunction = async ({
-  request,
-}: ActionFunctionArgs) => {
-  return await authenticator.logout(request, { redirectTo: "/login" });
-};
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
     failureRedirect: "/login",
   });
-  return json(user);
+
+  await axiosInstance.get("users", {
+    headers: {
+      Authorization: `Bearer ${user}`,
+    },
+  });
+
+  return 1;
 }
 
 export default function Index() {
-  const data = useLoaderData();
-  console.log(data);
-
   return (
     <main>
-      <Form method="post">
+      <Form method="post" action="logout">
         <button>ログアウト</button>
       </Form>
     </main>
