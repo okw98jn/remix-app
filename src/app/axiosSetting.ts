@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: process.env.API_URL,
-  // ここでCookieを取得できないので、Authorizationは使用箇所で設定する
+  // ここでCookieを取得できないので、Authorizationのjwtトークン付与は使用箇所で設定する
   headers: {
     "Content-Type": "application/json",
   },
