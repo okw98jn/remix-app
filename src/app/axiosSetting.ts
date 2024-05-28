@@ -21,6 +21,10 @@ axiosInstance.interceptors.response.use(
 
       switch (status) {
         case 401:
+          if (error.response.data.is_login_failed) {
+            // ログイン失敗時はErrorBoundaryに任せずにそのまま返す
+            return Promise.reject(error);
+          }
           message = "Unauthorized";
           break;
         case 403:
@@ -30,8 +34,9 @@ axiosInstance.interceptors.response.use(
           message = "Not Found";
           break;
         case 422:
-          // 422はバリデーションエラーなのでそのまま返す
-          return Promise.reject(error);
+          // クライアント側のバリデーションを突破した場合は不正なリクエストとして扱う
+          message = "Bad Request";
+          break;
         case 500:
           message = "Internal Server Error";
           break;
