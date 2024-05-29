@@ -21,10 +21,6 @@ axiosInstance.interceptors.response.use(
 
       switch (status) {
         case 401:
-          if (error.response.data.is_login_failed) {
-            // ログイン失敗時はErrorBoundaryに任せずにそのまま返す
-            return Promise.reject(error);
-          }
           message = "Unauthorized";
           break;
         case 403:
