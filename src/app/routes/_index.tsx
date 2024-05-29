@@ -1,8 +1,11 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, json } from "@remix-run/react";
 
-import { authenticator } from "@/services/auth.server";
 import axiosInstance from "@/axiosSetting";
+import {
+  getAuthTokenSession,
+  redirectIfUnauthenticated,
+} from "@/services/auth.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,17 +15,16 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await authenticator.isAuthenticated(request, {
-    failureRedirect: "/login",
-  });
+  const authToken = await getAuthTokenSession(request);
+  await redirectIfUnauthenticated(authToken);
 
   await axiosInstance.get("users", {
     headers: {
-      Authorization: `Bearer ${user}`,
+      Authorization: `Bearer ${authToken}`,
     },
   });
 
-  return 1;
+  return json({ authToken });
 }
 
 export default function Index() {

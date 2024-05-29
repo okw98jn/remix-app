@@ -1,5 +1,6 @@
 import {
   json,
+  redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
 } from "@remix-run/node";
@@ -10,9 +11,10 @@ import { TriangleAlert } from "lucide-react";
 import Header from "@/routes/_auth/components/Header";
 import FormItem from "@/routes/_auth/components/FormItem";
 import loginValidator from "@/routes/_auth.login/validator/loginValidator";
-import { authenticator } from "@/services/auth.server";
+import { loginSession } from "@/services/auth.server";
 import { commitSession, getSession } from "@/services/session.server";
 import LoadingButton from "@/components/element/LoadingButton";
+import { login } from "./api/login";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await loginValidator.validate(
@@ -23,28 +25,36 @@ export async function action({ request }: ActionFunctionArgs) {
     return validationError(formData.error);
   }
 
-  return await authenticator.authenticate("user-login", request, {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  });
+  const session = await getSession(request.headers.get("cookie"));
+
+  const authToken = await login(formData.data.email, formData.data.password);
+
+  if (!authToken) {
+    session.flash("isLoginFailed", true);
+
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  }
+
+  return await loginSession(request, authToken);
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get("cookie"));
-  const errorMessage = session.get(authenticator.sessionErrorKey)?.message;
+  const isLoginFailed = session.get("isLoginFailed") ?? false;
 
-  return json(
-    { errorMessage },
-    {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
-    }
-  );
+  return json(isLoginFailed, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 }
 
 const Login = () => {
-  const { errorMessage } = useLoaderData<typeof loader>();
+  const isLoginFailed = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
   const isLoading = navigation.state === "submitting";
@@ -64,7 +74,7 @@ const Login = () => {
           placeholder="sample@example.com"
         />
         <FormItem type="password" name="password" label="パスワード" />
-        {errorMessage && (
+        {isLoginFailed && (
           <div className="text-red-500 text-sm border border-red-500 rounded px-4 py-2 flex items-center">
             <TriangleAlert className="mr-4 w-5" />
             <p>

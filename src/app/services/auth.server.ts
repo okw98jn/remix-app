@@ -1,25 +1,45 @@
-import { Authenticator } from "remix-auth";
-import { FormStrategy } from "remix-auth-form";
+import { redirect } from "@remix-run/node";
 
-import { sessionStorage } from "@/services/session.server";
-import { login } from "@/routes/_auth.login/api/login";
+import {
+  commitSession,
+  getSession,
+  sessionStorage,
+} from "@/services/session.server";
 
-export const authenticator = new Authenticator<string>(sessionStorage, {
-  sessionErrorKey: "auth-error",
-});
+export async function loginSession(request: Request, authToken: string) {
+  const session = await getSession(request.headers.get("cookie"));
 
-authenticator.use(
-  new FormStrategy(async ({ form }) => {
-    try {
-      const token = await login(
-        String(form.get("email")),
-        String(form.get("password"))
-      );
+  session.set("authToken", authToken);
 
-      return token;
-    } catch (error) {
-      throw new Error((error as Error).message);
-    }
-  }),
-  "user-login"
-);
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
+}
+
+export async function getAuthTokenSession(request: Request) {
+  const session = await sessionStorage.getSession(
+    request.headers.get("cookie")
+  );
+
+  const authToken: string = session.get("authToken");
+
+  if (!authToken) {
+    return null;
+  }
+
+  return authToken;
+}
+
+export async function redirectIfUnauthenticated(authToken: string | null) {
+  if (!authToken) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+}
+
+export async function redirectIfAuthenticated(authToken: string | null) {
+  if (authToken) {
+    throw redirect("/");
+  }
+}

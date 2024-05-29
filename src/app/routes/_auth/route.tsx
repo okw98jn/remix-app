@@ -4,12 +4,16 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import SocialAuthButton from "@/routes/_auth/components/SocialAuthButton";
 import googleImage from "@/routes/_auth/images/google.png";
-import { authenticator } from "@/services/auth.server";
+import {
+  getAuthTokenSession,
+  redirectIfAuthenticated,
+} from "@/services/auth.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  return await authenticator.isAuthenticated(request, {
-    successRedirect: "/",
-  });
+  const authToken = await getAuthTokenSession(request);
+  await redirectIfAuthenticated(authToken);
+
+  return {};
 }
 
 const Auth = () => {

@@ -1,6 +1,7 @@
 import axiosInstance from "@/axiosSetting";
+import { AxiosError } from "axios";
 
-export async function login(email: string, password: string): Promise<string> {
+export async function login(email: string, password: string) {
   // FastApiの都合でFormDataを使用
   // emailのキー名がusernameになっているのも同様
   const formData = new FormData();
@@ -16,6 +17,13 @@ export async function login(email: string, password: string): Promise<string> {
 
     return response.data.access_token;
   } catch (error) {
-    throw new Error("ログインに失敗しました");
+    const err = error as AxiosError;
+
+    // 401以外はErrorBoundaryに任せる
+    if (err.status === 401) {
+      return null;
+    }
+
+    throw err;
   }
 }
