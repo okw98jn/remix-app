@@ -1,15 +1,15 @@
 import { redirect } from "@remix-run/node";
 
-import {
-  commitSession,
-  getSession,
-  sessionStorage,
-} from "@/services/session.server";
+import { commitSession, getSession } from "@/services/session.server";
 
 export async function loginSession(request: Request, authToken: string) {
   const session = await getSession(request.headers.get("cookie"));
 
   session.set("authToken", authToken);
+  session.flash("flashToast", {
+    message: "ログインしました",
+    type: "success",
+  });
 
   return redirect("/", {
     headers: {
@@ -19,9 +19,7 @@ export async function loginSession(request: Request, authToken: string) {
 }
 
 export async function getAuthTokenSession(request: Request) {
-  const session = await sessionStorage.getSession(
-    request.headers.get("cookie")
-  );
+  const session = await getSession(request.headers.get("cookie"));
 
   const authToken: string = session.get("authToken");
 
@@ -38,8 +36,23 @@ export async function redirectIfUnauthenticated(authToken: string | null) {
   }
 }
 
-export async function redirectIfAuthenticated(authToken: string | null) {
+export async function redirectIfAuthenticated(
+  request: Request,
+  authToken: string | null
+) {
   if (authToken) {
-    throw redirect("/");
+    const session = await getSession(request.headers.get("cookie"));
+    session.flash("flashToast", {
+      message: "すでにログインしています",
+      type: "error",
+    });
+
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
   }
+
+  return {};
 }

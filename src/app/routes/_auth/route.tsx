@@ -11,9 +11,8 @@ import {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const authToken = await getAuthTokenSession(request);
-  await redirectIfAuthenticated(authToken);
 
-  return {};
+  return await redirectIfAuthenticated(request, authToken);
 }
 
 const Auth = () => {

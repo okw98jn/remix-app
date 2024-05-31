@@ -28,6 +28,7 @@
     "date-fns": "^3.6.0",
     "isbot": "^4.1.0",
     "lucide-react": "^0.379.0",
+    "next-themes": "^0.3.0",
     "postcss": "^8.4.38",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -35,6 +36,7 @@
     "remix-auth": "^3.6.0",
     "remix-auth-form": "^1.5.0",
     "remix-validated-form": "^5.1.5",
+    "sonner": "^1.4.41",
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7"
