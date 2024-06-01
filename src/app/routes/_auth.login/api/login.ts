@@ -19,11 +19,11 @@ export async function login(email: string, password: string) {
   } catch (error) {
     const err = error as AxiosError;
 
-    // 401以外はErrorBoundaryに任せる
     if (err.status === 401) {
       return null;
     }
 
+    // 401以外はErrorBoundaryに任せる
     throw err;
   }
 }
