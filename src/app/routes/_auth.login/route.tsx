@@ -30,7 +30,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const authToken = await login(formData.data.email, formData.data.password);
 
   if (!authToken) {
-    session.flash("isLoginFailed", true);
+    session.flash("loginFailed", {
+      title: "ログイン失敗",
+      description: "メールアドレスとパスワードを確認してください",
+    });
 
     return redirect("/login", {
       headers: {
@@ -44,9 +47,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get("cookie"));
-  const isLoginFailed = session.get("isLoginFailed") ?? false;
+  const loginFailed = session.get("loginFailed") ?? null;
 
-  return json(isLoginFailed, {
+  return json(loginFailed, {
     headers: {
       "Set-Cookie": await commitSession(session),
     },
@@ -54,7 +57,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 const Login = () => {
-  const isLoginFailed = useLoaderData<typeof loader>();
+  const loginFailed = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
   const isLoading = navigation.state === "submitting";
@@ -74,14 +77,12 @@ const Login = () => {
           placeholder="sample@example.com"
         />
         <FormItem type="password" name="password" label="パスワード" />
-        {isLoginFailed && (
+        {loginFailed && (
           <div className="text-red-500 text-sm border border-red-500 rounded px-4 py-2 flex items-center">
             <TriangleAlert className="mr-4 w-5" />
             <p>
-              <span className="block">ログイン失敗</span>
-              <span className="text-xs">
-                メールアドレスとパスワードを確認してください
-              </span>
+              <span className="block">{loginFailed.title}</span>
+              <span className="text-xs">{loginFailed.description}</span>
             </p>
           </div>
         )}
