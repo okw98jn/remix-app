@@ -10,11 +10,11 @@ import { TriangleAlert } from "lucide-react";
 
 import Header from "@/routes/_auth/components/Header";
 import FormItem from "@/routes/_auth/components/FormItem";
-import loginValidator from "@/routes/_auth.login/validator/loginValidator";
+import loginValidator from "@/routes/_auth.login/validator";
 import { loginSession } from "@/services/auth.server";
 import { commitSession, getSession } from "@/services/session.server";
 import LoadingButton from "@/components/element/LoadingButton";
-import { login } from "./api/login";
+import { login } from "@/routes/_auth.login/api";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await loginValidator.validate(

@@ -5,10 +5,10 @@ import { AxiosError } from "axios";
 
 import Header from "@/routes/_auth/components/Header";
 import FormItem from "@/routes/_auth/components/FormItem";
-import registerValidator from "@/routes/_auth.register/validator/registerValidator";
+import registerValidator from "@/routes/_auth.register/validator";
 import LoadingButton from "@/components/element/LoadingButton";
 import { loginSession } from "@/services/auth.server";
-import { register } from "@/routes/_auth.register/api/register";
+import { register } from "@/routes/_auth.register/api";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await registerValidator.validate(await request.formData());
