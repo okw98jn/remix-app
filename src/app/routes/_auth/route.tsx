@@ -8,14 +8,21 @@ import {
   getAuthTokenSession,
   redirectIfAuthenticated,
 } from "@/services/auth.server";
+import { getGoogleAuthUrl } from "@/routes/_auth/api/googleAuth";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const authToken = await getAuthTokenSession(request);
+  if (await getAuthTokenSession(request)) {
+    return await redirectIfAuthenticated(request);
+  }
 
-  return await redirectIfAuthenticated(request, authToken);
+  return null;
 }
 
 const Auth = () => {
+  const handleGoogleLogin = async () => {
+    window.location.href = googleAuthUrl;
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen px-4 py-12 dark:bg-gray-900">
       <div className="w-full max-w-md space-y-8">
@@ -31,8 +38,16 @@ const Auth = () => {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <SocialAuthButton provider="Google" providerImage={googleImage} />
-          <SocialAuthButton provider="GitHub" providerImage={githubImage} />
+          <SocialAuthButton
+            provider="Google"
+            providerImage={googleImage}
+            onClick={handleGoogleLogin}
+          />
+          <SocialAuthButton
+            provider="GitHub"
+            providerImage={githubImage}
+            onClick={handleGoogleLogin}
+          />
         </div>
       </div>
     </div>

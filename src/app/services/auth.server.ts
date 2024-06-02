@@ -36,23 +36,16 @@ export async function redirectIfUnauthenticated(authToken: string | null) {
   }
 }
 
-export async function redirectIfAuthenticated(
-  request: Request,
-  authToken: string | null
-) {
-  if (authToken) {
-    const session = await getSession(request.headers.get("cookie"));
-    session.flash("flashToast", {
-      message: "すでにログインしています",
-      type: "error",
-    });
+export async function redirectIfAuthenticated(request: Request) {
+  const session = await getSession(request.headers.get("cookie"));
+  session.flash("flashToast", {
+    message: "すでにログインしています",
+    type: "error",
+  });
 
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
-    });
-  }
-
-  return {};
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 }
