@@ -1,4 +1,4 @@
-import { Outlet } from "@remix-run/react";
+import { Outlet, useFetcher } from "@remix-run/react";
 import githubImage from "@/routes/_auth/images/github.png";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
@@ -8,7 +8,7 @@ import {
   getAuthTokenSession,
   redirectIfAuthenticated,
 } from "@/services/auth.server";
-import { getGoogleAuthUrl } from "@/routes/_auth/api/googleAuth";
+import { SocialLoginProvider } from "@/routes/_auth.social-login/type";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   if (await getAuthTokenSession(request)) {
@@ -19,9 +19,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 const Auth = () => {
-  const handleGoogleLogin = async () => {
-    window.location.href = googleAuthUrl;
-  };
+  const fetcher = useFetcher();
+  const socialLoginUrl = fetcher.data as SocialLoginProvider;
+
+  if (socialLoginUrl) {
+    window.location.href = socialLoginUrl;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 py-12 dark:bg-gray-900">
@@ -37,18 +40,12 @@ const Auth = () => {
             </span>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <SocialAuthButton
-            provider="Google"
-            providerImage={googleImage}
-            onClick={handleGoogleLogin}
-          />
-          <SocialAuthButton
-            provider="GitHub"
-            providerImage={githubImage}
-            onClick={handleGoogleLogin}
-          />
-        </div>
+        <fetcher.Form method="post" action="/social-login">
+          <div className="grid grid-cols-2 gap-3">
+            <SocialAuthButton provider="Google" providerImage={googleImage} />
+            <SocialAuthButton provider="GitHub" providerImage={githubImage} />
+          </div>
+        </fetcher.Form>
       </div>
     </div>
   );
