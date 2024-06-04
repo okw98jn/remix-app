@@ -4,10 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 type Props = {
-  type: "email" | "password";
-  name: "email" | "password";
-  label: "メールアドレス" | "パスワード";
-  placeholder?: "sample@example.com";
+  type: "text" | "email" | "password";
+  name: "name" | "email" | "password";
+  label: "名前" | "メールアドレス" | "パスワード";
+  placeholder?: "山田太郎" | "sample@example.com";
 };
 
 const FormItem: React.FC<Props> = ({ type, name, label, placeholder }) => {

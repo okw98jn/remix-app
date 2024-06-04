@@ -19,6 +19,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   try {
     const authToken = await register(
+      formData.data.name,
       formData.data.email,
       formData.data.password
     );
@@ -50,6 +51,7 @@ const Register = () => {
         method="post"
         validator={registerValidator}
       >
+        <FormItem type="text" name="name" label="名前" placeholder="山田太郎" />
         <FormItem
           type="email"
           name="email"

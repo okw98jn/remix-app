@@ -3,6 +3,10 @@ import { z } from "zod";
 
 const registerValidator = withZod(
   z.object({
+    name: z
+      .string()
+      .min(1, { message: "名前を入力してください" })
+      .max(255, { message: "名前は255文字以内で入力してください" }),
     email: z
       .string()
       .min(1, { message: "メールアドレスを入力してください" })
